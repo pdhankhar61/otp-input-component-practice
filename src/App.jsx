@@ -33,14 +33,43 @@ export default function App({ fieldCount }) {
     }
   }
 
+  // for backspace- backward jumping
   function handleKeyUP(e) {
     if (e.code === "Backspace" || e.which === 8) {
-      const prevSibling = e.target.previousElementSibling;
-      if (e.target.value.length === 0 && prevSibling) {
-        prevSibling.focus();
-        prevSibling.select();
+      if (e.target.value.length === 0) {
+        const prevSibling = e.target.previousElementSibling;
+        if (prevSibling) {
+          prevSibling.focus();
+          prevSibling.select();
+        }
       }
     }
+  }
+
+  function pasteMainLogic(e) {
+    // reads clipboard.
+    const copied_otp = e.clipboardData.getData("text");
+    /*
+    Checks length and type of "copied_otp".
+    IF (length===fieldCount && it is a number) -> paste the value.
+    ELSE -> do nothing.
+
+    // parseInt is used here because isNaN was considering space(" ") and "" as number.
+    */
+    if (copied_otp.length === fieldCount && !isNaN(parseInt(copied_otp, 10))) {
+      const all_input_fields = document.getElementsByTagName("input");
+      for (let i = 0; i < all_input_fields.length; i++) {
+        all_input_fields[i].value = copied_otp[i];
+      }
+      all_input_fields[all_input_fields.length - 1].focus();
+      setFinalValue(Array.from(copied_otp));
+    }
+  }
+
+  // for pasting.
+  function handlePaste(e) {
+    e.preventDefault();
+    pasteMainLogic(e);
   }
 
   function handleSubmit() {
@@ -69,6 +98,7 @@ export default function App({ fieldCount }) {
               inputMode="numeric"
               onInput={handleInput}
               onKeyUp={handleKeyUP}
+              onPaste={handlePaste}
             />
           );
         })}
