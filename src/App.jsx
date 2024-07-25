@@ -11,11 +11,12 @@ export default function App({ fieldCount }) {
   });
   const [finalValue, setFinalValue] = useState([]);
 
-  function handleChange(e) {
-    const isNotANumber = isNaN(e.target.value);
+  // for handling Input in field - forward jumping
+  function handleInput(e) {
+    // parseInt is used here because isNaN was considering space(" ") and "" as number.
+    const isNotANumber = isNaN(parseInt(e.target.value, 10));
     if (isNotANumber) {
       e.target.value = "";
-      return undefined;
     }
 
     setFinalValue((prev) => {
@@ -24,9 +25,11 @@ export default function App({ fieldCount }) {
       return temp_array;
     });
 
-    const nextSibling = e.target.nextElementSibling;
-    if (e.target.value.length === 1 && nextSibling) {
-      nextSibling.focus();
+    if (e.target.value.length === 1) {
+      const nextSibling = e.target.nextElementSibling;
+      if (nextSibling) {
+        nextSibling.focus();
+      }
     }
   }
 
@@ -64,7 +67,7 @@ export default function App({ fieldCount }) {
               autoFocus={item.id === otpInputs[0].id}
               maxLength={1}
               inputMode="numeric"
-              onChange={handleChange}
+              onInput={handleInput}
               onKeyUp={handleKeyUP}
             />
           );
